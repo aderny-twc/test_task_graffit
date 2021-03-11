@@ -1,4 +1,3 @@
-import json
 import os
 import sys
 
@@ -55,7 +54,6 @@ class LogWorker:
         try:
             self.logs = sorter(self.logs, dict_key)
         except AttributeError as err:
-
             message = """Did you get the resourse data?
             To receive, execute <obj_name>.get_site_data()."""
             print(message, f'\n\n***Error: {err}')
