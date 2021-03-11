@@ -32,8 +32,8 @@ fake_logs_error = {'error': 'Some error happened'}
 
 
 class MockResponse:
-    def __init__(self):
-        self.json_data = None
+    def __init__(self, some_dict):
+        self.json_data = some_dict
         self.status_code = 200
 
     def json(self):
@@ -51,16 +51,14 @@ class TestLogger(TestCase):
 
     def test_logworker_getting_json(self):
         logworker = LogWorker('some_url', 'key')
-        fake_response = MockResponse()
-        fake_response.json_data = fake_logs
+        fake_response = MockResponse(some_dict=fake_logs)
         logger.requests.get = Mock(return_value=fake_response)
         result = logworker.get_site_data()
         self.assertEqual(result, fake_logs['logs'])
 
-    def test_logworker_json_err_return_none(self):
+    def test_logworker_json_err_returns_none(self):
         logworker = LogWorker('some_url', 'key')
-        fake_response = MockResponse()
-        fake_response.json_data = fake_logs_error
+        fake_response = MockResponse(some_dict=fake_logs_error)
         logger.requests.get = Mock(return_value=fake_response)
         result = logworker.get_site_data()
         self.assertEqual(result, None)
