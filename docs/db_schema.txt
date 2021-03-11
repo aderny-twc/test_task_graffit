@@ -1,12 +1,12 @@
 =====
 table user
-	first_name	varchar
-	last_name	varchar
-	user_id		int, unique
+	first_name	varchar, not null
+	last_name	varchar, not null
+	user_id		int, pk, unique
 
 =====
 table message
-	message_id	int, unique
+	msg_id      int, pk
 	user_id		int, fk
-	body		text
-	created_at	date
+	body		text, not null
+	created_at	date, not null

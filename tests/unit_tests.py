@@ -1,6 +1,7 @@
+import os
+import sys
 from unittest import TestCase, main
 from unittest.mock import patch, Mock
-import sys, os
 
 sys.path.append(os.getcwd())
 from logger.logger import *
@@ -10,29 +11,33 @@ from logger import logger
 fake_logs = {
     'error': '',
     'logs': [
-                {
-                    'created_at': '2021-01-23T07:54:27',
-                    'first_name': 'John',
-                    'message': 'Oh, hi Mark!',
-                    'second_name': 'Doe',
-                    'user_id': '617919',
-                },
-                {    
-                    'created_at': '2021-01-23T07:45:55',
-                    'first_name': 'Luke',
-                    'message': 'What happend?',
-                    'second_name': 'Smith',
-                    'user_id': '617233',
-                },
-            ]
+        {
+            'created_at': '2021-01-23T07:54:27',
+            'first_name': 'John',
+            'message': 'Oh, hi Mark!',
+            'second_name': 'Doe',
+            'user_id': '617919',
+        },
+        {
+            'created_at': '2021-01-23T07:45:55',
+            'first_name': 'Luke',
+            'message': 'What happend?',
+            'second_name': 'Smith',
+            'user_id': '617233',
+        },
+    ]
 }
 
+fake_logs_error = {'error': 'Some error happened'}
 
-class FakeJson:
+
+class MockResponse:
     def __init__(self):
-        self.json = json.dumps(fake_logs)
-        fake_logs['error'] = 'some error'
-        self.json_err = json.dumps(fake_logs)
+        self.json_data = None
+        self.status_code = 200
+
+    def json(self):
+        return self.json_data
 
 
 class TestLogger(TestCase):
@@ -46,15 +51,17 @@ class TestLogger(TestCase):
 
     def test_logworker_getting_json(self):
         logworker = LogWorker('some_url', 'key')
-        fake_json = Mock(return_value=FakeJson().json)
-        logger.requests.get = fake_json
+        fake_response = MockResponse()
+        fake_response.json_data = fake_logs
+        logger.requests.get = Mock(return_value=fake_response)
         result = logworker.get_site_data()
         self.assertEqual(result, fake_logs['logs'])
 
     def test_logworker_json_err_return_none(self):
         logworker = LogWorker('some_url', 'key')
-        fake_json = Mock(return_value=FakeJson().json_err)
-        logger.requests.get = fake_json
+        fake_response = MockResponse()
+        fake_response.json_data = fake_logs_error
+        logger.requests.get = Mock(return_value=fake_response)
         result = logworker.get_site_data()
         self.assertEqual(result, None)
 

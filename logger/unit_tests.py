@@ -1,9 +1,9 @@
+import os
+import sys
 from unittest import TestCase, main
-from unittest.mock import patch, Mock
-import sys, os
+from unittest.mock import patch
 
 sys.path.append(os.getcwd())
-#from logger.logger import LogWorker
 
 
 class TestLogger(TestCase):

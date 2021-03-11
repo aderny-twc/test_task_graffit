@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -32,8 +33,9 @@ class LogWorker:
         Данные сохраняются в списке self.logs.
         """
         try:
-            request = requests.get(self.conn_line)
-            self.all_logs = request.json()
+            request = requests.get(self.conn_line).json()
+            # self.all_logs = request.json()
+            self.all_logs = request
         except requests.ConnectionError as err:
             print("***Error has occurred.\nDoes this resource support fetching json data?", err, sep='\n')
             return None
@@ -63,6 +65,8 @@ class LogWorker:
         """Подготавливает данные и записывает их в базу данных."""
         # Преобразование строк в числа по указанным полям
         clean_data = dict_val_conv(self.logs, 'user_id')
+        # Преобразование времени в объектах сообщений
+        clean_data = dict_date_conv(clean_data, 'created_at')
 
         # Разделение пользовательских данных и сообщений
         user_data = dict_extractor(clean_data,
@@ -74,8 +78,6 @@ class LogWorker:
                                   'created_at',
                                   'message',
                                   'user_id')
-        # Преобразование времени в объектах сообщений
-        mes_data = dict_date_conv(mes_data, 'created_at')
 
         # Создание объектов пользователей и сообщений
         users = [User(user_id=user_obj['user_id'],
