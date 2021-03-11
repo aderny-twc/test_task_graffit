@@ -34,7 +34,6 @@ class LogWorker:
         """
         try:
             request = requests.get(self.conn_line).json()
-            # self.all_logs = request.json()
             self.all_logs = request
         except requests.ConnectionError as err:
             print("***Error has occurred.\nDoes this resource support fetching json data?", err, sep='\n')
